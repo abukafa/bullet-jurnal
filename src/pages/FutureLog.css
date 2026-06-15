@@ -1,0 +1,74 @@
+.future-log {
+  padding-top: 20px;
+}
+
+.future-log h1 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.future-grid {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding-bottom: 20px;
+  scroll-snap-type: x mandatory;
+}
+
+.future-month-card {
+  background-color: var(--bg-color);
+  border: 1px solid var(--accent-light);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  min-width: 85vw; /* Almost full width on mobile */
+  scroll-snap-align: start;
+}
+
+.future-month-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  border-bottom: 1px solid var(--accent-light);
+  padding-bottom: 6px;
+}
+
+.bullets-container.future {
+  min-height: 80px;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 600px) {
+  .future-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow-x: visible;
+  }
+  .future-month-card {
+    min-width: auto;
+  }
+}
+
+@media (min-width: 900px) {
+  .future-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/* Custom Override for BulletItem in Future Log */
+.bullets-container.future .bullet-text {
+  display: block !important;
+  width: 100% !important;
+}
+
+.bullets-container.future .bullet-title {
+  display: block !important;
+  width: 100% !important;
+  white-space: normal !important;
+}

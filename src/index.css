@@ -1,0 +1,123 @@
+:root {
+  /* Minimalist Color Palette */
+  --bg-color: #f2efe9; /* Softer, warmer off-white (less sharp) */
+  --text-color: #1a1a1a;
+  --text-muted: #888888;
+  --dot-color: rgba(0, 0, 0, 0.08); /* More visible but soft dark dots */
+  --accent-color: #2c3e50; /* Calm dark blue/slate */
+  --accent-light: #e0e6ed;
+  
+  /* Layout */
+  --max-width: 800px; /* Mobile first */
+  --nav-height: 70px;
+  
+  /* Typography */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dotted paper background */
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center; /* Center the mobile container on larger screens */
+  background-color: #e0e0e0; /* Gray background outside mobile container */
+}
+
+/* Dark mode overrides via class instead of media query */
+body.dark-mode, .dark-mode {
+  --bg-color: #262626; /* Softer dark gray (less pitch black) */
+  --text-color: #ffffff; /* pure white for maximum contrast */
+  --text-muted: #b0b0b0; /* softer bright gray */
+  --dot-color: rgba(255, 255, 255, 0.08); /* Visible but soft white dots */
+  --accent-color: #a3b8cc;
+  --accent-light: #2d3748;
+  background-color: var(--bg-color);
+}
+
+/* Mobile First Container */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  position: relative;
+  overflow-x: hidden;
+
+  /* Dotted paper effect */
+  background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+  
+  /* Transition for theme switch */
+  transition: background-color 0.3s ease, color 0.3s ease, max-width 0.3s ease, padding 0.3s ease;
+}
+
+/* 3-State Layout Classes */
+#root.layout-fixed {
+  --nav-max-width: 480px;
+}
+
+#root.layout-fluid, #root.layout-zen {
+  --nav-max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  /* On desktop, the main container is ALWAYS full width */
+  :root {
+    --max-width: 100%;
+  }
+  
+  #root {
+    padding: 0 5%;
+  }
+  
+  body {
+    display: block;
+  }
+}
+
+/* Base styles */
+h1, h2, h3, p, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Hide scrollbar for cleaner look */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Content Area padding to accommodate Bottom Nav */
+.content-area {
+  padding: 20px;
+  padding-bottom: calc(var(--nav-height) + 20px);
+  min-height: 100vh;
+}
+
+/* Reset buttons */
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+button:focus {
+  outline: none;
+}

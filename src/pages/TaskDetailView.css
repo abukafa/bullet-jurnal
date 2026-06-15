@@ -1,0 +1,147 @@
+.task-detail-view {
+  padding: 0 10px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.detail-header button {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.detail-header button:hover {
+  background-color: var(--accent-light);
+}
+
+.delete-btn {
+  color: #ff4d4f !important;
+}
+
+.delete-btn:hover {
+  background-color: rgba(255, 77, 79, 0.1) !important;
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--accent-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  padding: 8px 0;
+  outline: none;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.half {
+  flex: 1;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.detail-input, .detail-select, .detail-textarea {
+  background-color: transparent;
+  border: 1px solid var(--accent-light);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 1rem;
+  color: var(--text-color);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.detail-input:focus, .detail-select:focus, .detail-textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+}
+
+.detail-select {
+  cursor: pointer;
+  appearance: none; /* Often helps with custom styling */
+}
+
+/* Style the option tags for dark mode */
+.detail-select option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 10px;
+}
+
+.detail-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.radio-group {
+  display: flex;
+  gap: 10px;
+}
+
+.radio-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 1px solid var(--accent-light);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  color: var(--text-muted);
+}
+
+.radio-label input {
+  display: none;
+}
+
+.radio-label.active {
+  background-color: var(--accent-color);
+  color: var(--bg-color);
+  border-color: var(--accent-color);
+}

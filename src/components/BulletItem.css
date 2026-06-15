@@ -1,0 +1,152 @@
+.bullet-wrapper {
+  margin-bottom: 8px;
+  touch-action: pan-y; /* Allow vertical scrolling, but catch horizontal drag */
+  position: relative;
+  background-color: transparent; /* Changed from var(--bg-color) to let dots show */
+  z-index: 10;
+}
+
+.bullet-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 0;
+  gap: 12px;
+}
+
+.bullet-symbol {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  font-family: monospace;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: -2px; /* Align with text */
+}
+
+.bullet-symbol.task:hover {
+  opacity: 0.7;
+}
+
+.bullet-symbol.task.complete {
+  color: var(--text-muted);
+}
+
+.bullet-text {
+  flex: 1;
+  font-size: 1rem;
+  word-break: break-word;
+  transition:
+    color 0.3s ease,
+    text-decoration-color 0.3s ease;
+  cursor: pointer;
+  user-select: none; /* Prevent selection when double clicking to edit */
+}
+
+.bullet-text.strikethrough {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  color: var(--text-muted);
+}
+
+.time-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: var(--accent-light);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.collection-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: var(--accent-color);
+  color: var(--bg-color);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.bullet-has-notes {
+  display: inline-block;
+  margin-left: 8px;
+  color: var(--accent-color);
+  opacity: 0.6;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.bullet-title {
+  display: flex;
+  align-items: center;
+}
+
+.desktop-only {
+  display: none;
+}
+
+.mobile-only {
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .bullet-text:not(.compact-view) {
+    display: grid;
+    grid-template-columns: 2fr 60px 3fr;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .bullet-text.compact-view {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .bullet-title {
+    min-width: 0;
+  }
+
+  .desktop-only {
+    display: block; /* Let them be grid items */
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+  
+  .mobile-only {
+    display: none;
+  }
+  
+  .meta-time {
+    display: flex;
+    justify-content: center;
+  }
+
+  .time-badge {
+    font-family: monospace;
+    background-color: var(--accent-light);
+    color: var(--text-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+  
+  .meta-desc {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    width: 100%;
+  }
+}

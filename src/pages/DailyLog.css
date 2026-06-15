@@ -1,0 +1,41 @@
+.daily-log {
+  padding-top: 20px;
+  transition: all 0.5s ease;
+}
+
+.daily-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.daily-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.zen-toggle {
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+}
+
+.zen-toggle:hover {
+  color: var(--text-color);
+}
+
+.bullets-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 50vh;
+}
+
+/* Zen Mode overrides */
+.daily-log.zen-mode {
+  padding-top: 40px;
+}
+
+.daily-log.zen-mode .daily-header h1 {
+  opacity: 0.5;
+}

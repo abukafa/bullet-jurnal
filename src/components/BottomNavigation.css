@@ -1,0 +1,49 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid var(--accent-light);
+  z-index: 1000;
+  max-width: var(--nav-max-width, 100%);
+  margin: 0 auto;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+  transition: max-width 0.3s ease;
+}
+
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-btn.active {
+  color: var(--accent-color);
+}
+
+.nav-label {
+  font-size: 0.65rem;
+  margin-top: 4px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.nav-indicator {
+  position: absolute;
+  bottom: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+}
