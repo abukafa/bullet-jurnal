@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppStore } from '../store';
-import { BookOpen, CalendarDays, Calendar, Sun } from 'lucide-react';
+import { BookOpen, CalendarDays, Calendar, Sun, Activity } from 'lucide-react';
 import './BottomNavigation.css';
 
 export default function BottomNavigation() {
@@ -13,6 +13,7 @@ export default function BottomNavigation() {
     { id: 'monthly', icon: Calendar, label: 'Monthly' },
     { id: 'future', icon: CalendarDays, label: 'Future' },
     { id: 'index', icon: BookOpen, label: 'Index' },
+    { id: 'habits', icon: Activity, label: 'Habits' },
   ];
 
   return (

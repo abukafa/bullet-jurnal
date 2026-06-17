@@ -1,0 +1,188 @@
+.habit-tracker-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.habits-container {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 768px) {
+  .habit-grid-wrapper {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}
+
+.add-habit-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.add-habit-form input {
+  flex: 1;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.add-habit-form button {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  border: none;
+  border-radius: 8px;
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.add-habit-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.habit-grid-wrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-color);
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  margin-bottom: 1rem;
+}
+
+.habit-grid {
+  border-collapse: collapse;
+  width: max-content; /* Ensure it expands to fit all days */
+  min-width: 100%;
+}
+
+.habit-grid th, .habit-grid td {
+  border: 1px solid var(--border-color);
+  padding: 0;
+  text-align: center;
+}
+
+.habit-name-col {
+  position: sticky;
+  left: 0;
+  background: var(--bg-color);
+  z-index: 2;
+  padding: 0.75rem 1rem !important;
+  text-align: left !important;
+  min-width: 120px;
+  max-width: 150px;
+  border-right: 2px solid var(--border-color) !important;
+}
+
+.habit-name-cell {
+  position: sticky;
+  left: 0;
+  background: var(--bg-color);
+  z-index: 2;
+  padding: 0.5rem 0.75rem !important;
+  text-align: left !important;
+  border-right: 2px solid var(--border-color) !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.habit-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.del-habit-btn {
+  background: none;
+  border: none;
+  color: var(--error-color, #ef4444);
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.del-habit-btn:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.grid-col {
+  padding: 0.5rem !important;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  width: 32px; /* Fixed width, squished slightly */
+  min-width: 32px;
+}
+
+.grid-col-today {
+  color: var(--accent-color);
+  background: var(--accent-light);
+}
+
+.habit-cell-wrapper {
+  height: 38px; /* Slightly squished height to match */
+}
+
+.habit-cell {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  margin: 0;
+  transition: background-color 0.2s;
+}
+
+.habit-cell:hover {
+  background-color: var(--bg-secondary);
+}
+
+.habit-cell.today-cell {
+  background-color: var(--accent-light);
+}
+
+.x-mark-container {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none; /* Let clicks pass through to button */
+}
+
+.habit-x-mark {
+  color: var(--accent-color);
+  display: block;
+  pointer-events: none;
+}
+
+.empty-state {
+  padding: 2rem !important;
+  color: var(--text-muted);
+  text-align: center !important;
+  font-style: italic;
+}

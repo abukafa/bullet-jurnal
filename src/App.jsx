@@ -8,6 +8,7 @@ import FutureLog from './pages/FutureLog';
 import IndexPage from './pages/IndexPage';
 import CustomCollectionView from './pages/CustomCollectionView';
 import TaskDetailView from './pages/TaskDetailView';
+import HabitTracker from './pages/HabitTracker';
 import ConfirmModal from './components/ConfirmModal';
 import PromptModal from './components/PromptModal';
 import { toProperCase } from './utils';
@@ -74,6 +75,7 @@ function App() {
       case 'monthly': return <MonthlyLog />;
       case 'future': return <FutureLog />;
       case 'index': return <IndexPage />;
+      case 'habits': return <HabitTracker />;
       case 'custom': return <CustomCollectionView />;
       default: return <DailyLog />;
     }

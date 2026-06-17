@@ -16,3 +16,9 @@ db.version(2).stores({
 db.version(3).stores({
   bullets: '++id, pageId, type, status, text, order, createdAt, updatedAt, date, time, [type+date]'
 });
+
+// V3 architecture: Habit Tracker
+db.version(4).stores({
+  habits: '++id, name, createdAt',
+  habitLogs: '[habitId+date], habitId, date'
+});
