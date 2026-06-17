@@ -35,10 +35,13 @@ export default function IndexPage() {
     col.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredTasks = (searchTerm.trim() === '' || !allBullets) ? [] : allBullets.filter(b => 
-    b.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (b.description && b.description.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredTasks = (searchTerm.trim() === '' || !allBullets) ? [] : allBullets.filter(b => {
+    // Exclude daily/monthly notes from index search, as requested: "hanya ditampilkan di 2 halaman ini saja"
+    if (b.type === 'note' && !b.pageId?.startsWith('col_')) return false;
+    
+    return b.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (b.description && b.description.toLowerCase().includes(searchTerm.toLowerCase()));
+  });
 
   return (
     <div className="index-page">
@@ -66,7 +69,7 @@ export default function IndexPage() {
                 const col = collections?.find(c => c.id === colId);
                 if (col) contextLabel = col.name;
               }
-              return <BulletItem key={b.id} bullet={b} contextLabel={contextLabel} />;
+              return <BulletItem key={b.id} bullet={b} contextLabel={contextLabel} searchResult={true} />;
             })}
           </div>
         </div>

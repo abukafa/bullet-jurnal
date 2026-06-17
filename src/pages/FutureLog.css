@@ -61,14 +61,4 @@
   }
 }
 
-/* Custom Override for BulletItem in Future Log */
-.bullets-container.future .bullet-text {
-  display: block !important;
-  width: 100% !important;
-}
 
-.bullets-container.future .bullet-title {
-  display: block !important;
-  width: 100% !important;
-  white-space: normal !important;
-}

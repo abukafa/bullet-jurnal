@@ -70,19 +70,19 @@ export default function CustomCollectionView() {
       <PageHeader title={collection.name} />
       
       <div className="collection-content">
-        <div className="bullets-container">
-          {bullets?.length === 0 && (
-            <p className="empty-state">Start adding items to your {collection.name}...</p>
-          )}
+        <div className="bullets-container custom">
+          {bullets?.length === 0 && <p className="empty-state">This collection is empty. Add your first note below.</p>}
           {bullets?.map(b => (
-            <BulletItem key={b.id} bullet={b} compact={true} />
+            <BulletItem key={b.id} bullet={b} />
           ))}
         </div>
-        <BulletInput 
-          pageId={pageId} 
-          defaultType="note"
-          forceProperCase={true}
-        />
+        
+        {collection && (
+          <BulletInput 
+            pageId={`col_${collectionId}`} 
+            defaultType="note"
+          />
+        )}
       </div>
     </div>
   );

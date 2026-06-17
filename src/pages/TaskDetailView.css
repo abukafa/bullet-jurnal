@@ -92,6 +92,17 @@
   font-family: inherit;
   outline: none;
   transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+.detail-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.detail-textarea.auto-scale {
+  overflow-y: hidden;
+  resize: none;
 }
 
 .detail-input:focus, .detail-select:focus, .detail-textarea:focus {

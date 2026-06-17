@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  padding-top: 20px;
 }
 
 .calendar-navigation {
@@ -224,5 +225,20 @@
 
   .calendar-day-btn.active:hover {
     background-color: var(--accent-color);
+  }
+
+  /* Task View Custom Bullet Layout */
+  .monthly-log .bullet-text:not(.compact-view):not(.search-result-view) {
+    grid-template-columns: 1fr auto;
+  }
+
+  .monthly-log .meta-time {
+    order: 3;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .monthly-log .meta-desc {
+    display: none;
   }
 }

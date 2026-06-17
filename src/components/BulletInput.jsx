@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
 import { db } from '../db';
+import { toProperCase } from '../utils';
 import './BulletInput.css';
 
-export default function BulletInput({ pageId, defaultDate, defaultStatus, defaultType, forceUppercase, forceProperCase, onAdd }) {
+export default function BulletInput({ pageId, defaultDate, defaultStatus, defaultType, onAdd }) {
   const [text, setText] = useState('');
 
-  const handleKeyDown = async (e) => {
-    if (e.key === 'Enter' && text.trim() !== '') {
-      e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (text.trim() !== '') {
       await parseAndAddBullet(text.trim());
       setText('');
     }
-  };
-
-  const toProperCase = (str) => {
-    return str.replace(/\w\S*/g, function(txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
   };
 
   const parseAndAddBullet = async (input) => {
@@ -35,11 +30,8 @@ export default function BulletInput({ pageId, defaultDate, defaultStatus, defaul
       cleanText = input.substring(2);
     }
     
-    if (forceUppercase) {
-      cleanText = cleanText.toUpperCase();
-    } else if (forceProperCase) {
-      cleanText = toProperCase(cleanText);
-    }
+    // V2: Always apply Title Case universally
+    cleanText = toProperCase(cleanText);
 
     const now = new Date();
     
@@ -71,7 +63,7 @@ export default function BulletInput({ pageId, defaultDate, defaultStatus, defaul
   };
 
   return (
-    <div className="bullet-input-wrapper">
+    <form className="bullet-input-wrapper" onSubmit={handleSubmit}>
       <div className="bullet-input-symbol">•</div>
       <input
         type="text"
@@ -79,9 +71,9 @@ export default function BulletInput({ pageId, defaultDate, defaultStatus, defaul
         placeholder="Type '.' for task, '-' for note, 'o' for event..."
         value={text}
         onChange={(e) => setText(e.target.value)}
-        onKeyDown={handleKeyDown}
         autoComplete="off"
+        enterKeyHint="send"
       />
-    </div>
+    </form>
   );
 }

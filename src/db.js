@@ -11,3 +11,8 @@ db.version(1).stores({
 db.version(2).stores({
   bullets: '++id, pageId, type, status, text, order, createdAt, updatedAt, date, time'
 });
+
+// V2 architecture: optimized querying for global events
+db.version(3).stores({
+  bullets: '++id, pageId, type, status, text, order, createdAt, updatedAt, date, time, [type+date]'
+});

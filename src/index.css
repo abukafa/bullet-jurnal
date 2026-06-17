@@ -36,12 +36,12 @@ body {
 
 /* Dark mode overrides via class instead of media query */
 body.dark-mode, .dark-mode {
-  --bg-color: #262626; /* Softer dark gray (less pitch black) */
-  --text-color: #ffffff; /* pure white for maximum contrast */
-  --text-muted: #b0b0b0; /* softer bright gray */
-  --dot-color: rgba(255, 255, 255, 0.08); /* Visible but soft white dots */
-  --accent-color: #a3b8cc;
-  --accent-light: #2d3748;
+  --bg-color: #121826; /* Deep cool slate */
+  --text-color: #e2e8f0; /* Soft off-white */
+  --text-muted: #94a3b8; /* Slate gray */
+  --dot-color: rgba(255, 255, 255, 0.06);
+  --accent-color: #38bdf8; /* Light sky blue */
+  --accent-light: #1e293b; /* Dark slate */
   background-color: var(--bg-color);
 }
 

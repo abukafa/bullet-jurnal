@@ -11,17 +11,7 @@
   align-items: center;
   margin-bottom: 20px;
 }
-.custom-collection-view .bullet-title {
-  font-style: italic;
-  display: block !important;
-  width: 100% !important;
-  white-space: normal !important;
-}
 
-.custom-collection-view .bullet-text {
-  display: block !important;
-  width: 100% !important;
-}
 .back-btn {
   display: flex;
   align-items: center;

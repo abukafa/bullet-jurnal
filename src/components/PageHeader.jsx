@@ -10,16 +10,16 @@ export default function PageHeader({ title }) {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
-  const renderLayoutIcon = () => {
+  const getLayoutIcon = () => {
     if (layoutMode === 'fluid') return <Maximize size={20} />;
-    if (layoutMode === 'fixed') return <Minimize size={20} />;
-    if (layoutMode === 'zen') return <Expand size={20} />;
+    if (layoutMode === 'zen') return <Minimize size={20} />;
+    return <Maximize size={20} />;
   };
 
-  const getLayoutTooltip = () => {
-    if (layoutMode === 'fluid') return "Fluid (Full Width)";
-    if (layoutMode === 'fixed') return "Fixed (Mobile Width)";
+  const getLayoutLabel = () => {
+    if (layoutMode === 'fluid') return "Default (Show Nav)";
     if (layoutMode === 'zen') return "Zen Mode (Hide Nav)";
+    return "Layout";
   };
 
   return (
@@ -29,8 +29,8 @@ export default function PageHeader({ title }) {
         <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle Theme" title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}>
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
-        <button className="icon-btn" onClick={cycleLayoutMode} aria-label="Cycle Layout Mode" title={getLayoutTooltip()}>
-          {renderLayoutIcon()}
+        <button className="icon-btn" onClick={cycleLayoutMode} aria-label="Toggle Layout Mode" title={getLayoutLabel()}>
+          {getLayoutIcon()}
         </button>
       </div>
     </div>

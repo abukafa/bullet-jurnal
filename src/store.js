@@ -13,9 +13,9 @@ export const useAppStore = create((set) => ({
   setActiveBulletId: (id) => set({ activeBulletId: id }),
 
   // Layout State (3-mode cycle)
-  layoutMode: 'fluid', // 'fluid' | 'fixed' | 'zen'
+  layoutMode: 'fluid', // 'fluid' | 'zen'
   cycleLayoutMode: () => set((state) => {
-    const modes = ['fluid', 'fixed', 'zen'];
+    const modes = ['fluid', 'zen'];
     const nextIndex = (modes.indexOf(state.layoutMode) + 1) % modes.length;
     return { layoutMode: modes[nextIndex] };
   }),

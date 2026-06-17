@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
 import { useAppStore } from '../store';
@@ -9,6 +9,7 @@ import './TaskDetailView.css';
 export default function TaskDetailView({ bulletId }) {
   const { setActiveBulletId, showConfirm } = useAppStore();
   const [bullet, setBullet] = useState(null);
+  const textareaRef = useRef(null);
 
   // Form states
   const [text, setText] = useState('');
@@ -21,6 +22,13 @@ export default function TaskDetailView({ bulletId }) {
   const [originalPageId, setOriginalPageId] = useState('');
 
   const collections = useLiveQuery(() => db.collections.toArray());
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  }, [description]);
 
   useEffect(() => {
     const fetchBullet = async () => {
@@ -57,11 +65,37 @@ export default function TaskDetailView({ bulletId }) {
   const handleSave = async () => {
     if (!text.trim()) return;
     
+    let finalDate = date;
+    let finalStatus = status;
+
+    const originalBullet = await db.bullets.get(bulletId);
+
+    // Rule 1: Status changed to 'migrated', date unchanged -> bump date + 1 month
+    if (finalStatus === 'migrated' && status !== originalBullet.status && finalDate === originalBullet.date) {
+      if (finalDate) {
+        const [y, m, d] = finalDate.split('-');
+        let newM = parseInt(m) + 1;
+        let newY = parseInt(y);
+        if (newM > 12) {
+          newM = 1;
+          newY++;
+        }
+        const daysInNextMonth = new Date(newY, newM, 0).getDate();
+        let newD = Math.min(parseInt(d), daysInNextMonth);
+        finalDate = `${newY}-${String(newM).padStart(2, '0')}-${String(newD).padStart(2, '0')}`;
+      }
+    }
+
+    // Rule 2: Date changed, status unchanged -> set status to 'scheduled'
+    if (finalDate !== originalBullet.date && finalStatus === originalBullet.status) {
+      finalStatus = 'scheduled';
+    }
+
     await db.bullets.update(bulletId, {
       text: text.trim(),
       type,
-      status,
-      date,
+      status: finalStatus,
+      date: finalDate,
       time,
       description,
       pageId: type === 'note' ? bulletPageId : originalPageId,
@@ -163,11 +197,12 @@ export default function TaskDetailView({ bulletId }) {
         <div className="form-group">
           <label><AlignLeft size={16} /> Description</label>
           <textarea 
-            className="detail-textarea" 
+            ref={textareaRef}
+            className="detail-textarea auto-scale" 
             value={description} 
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add extra details, sub-tasks, or brain dump here..."
-            rows="8"
+            rows="4"
           />
         </div>
       </div>

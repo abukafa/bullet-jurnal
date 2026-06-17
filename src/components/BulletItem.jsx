@@ -4,7 +4,7 @@ import { db } from '../db';
 import { useAppStore } from '../store';
 import './BulletItem.css';
 
-export default function BulletItem({ bullet, compact, contextLabel }) {
+export default function BulletItem({ bullet, compact, contextLabel, searchResult, shortDate }) {
   const controls = useAnimation();
   const { setActiveBulletId } = useAppStore();
   const [status, setStatus] = useState(bullet.status);
@@ -31,7 +31,20 @@ export default function BulletItem({ bullet, compact, contextLabel }) {
 
     if (offset > swipeThreshold) {
       setStatus('migrated');
-      await db.bullets.update(bullet.id, { status: 'migrated', updatedAt: new Date() });
+      let finalDate = bullet.date;
+      if (finalDate) {
+        const [y, m, d] = finalDate.split('-');
+        let newM = parseInt(m) + 1;
+        let newY = parseInt(y);
+        if (newM > 12) {
+          newM = 1;
+          newY++;
+        }
+        const daysInNextMonth = new Date(newY, newM, 0).getDate();
+        let newD = Math.min(parseInt(d), daysInNextMonth);
+        finalDate = `${newY}-${String(newM).padStart(2, '0')}-${String(newD).padStart(2, '0')}`;
+      }
+      await db.bullets.update(bullet.id, { status: 'migrated', date: finalDate, updatedAt: new Date() });
       if (navigator.vibrate) navigator.vibrate([30, 30]);
     } else if (offset < -swipeThreshold) {
       setStatus('scheduled');
@@ -43,11 +56,12 @@ export default function BulletItem({ bullet, compact, contextLabel }) {
   };
 
   const renderSymbol = () => {
-    if (type === 'event') return '○';
-    if (type === 'note') return '—';
-    if (status === 'complete') return '×';
     if (status === 'migrated') return '>';
     if (status === 'scheduled') return '<';
+    if (status === 'complete') return '×';
+    
+    if (type === 'event') return '○';
+    if (type === 'note') return '—';
     return '•';
   };
 
@@ -56,11 +70,21 @@ export default function BulletItem({ bullet, compact, contextLabel }) {
   };
 
   const displayTime = bullet.time || (bullet.createdAt ? `${String(new Date(bullet.createdAt).getHours()).padStart(2, '0')}:${String(new Date(bullet.createdAt).getMinutes()).padStart(2, '0')}` : null);
+  
+  let dateText = bullet.date;
+  if (shortDate && bullet.date) {
+    const [y, m, d] = bullet.date.split('-');
+    if (y && m && d) {
+      const dateObj = new Date(y, parseInt(m) - 1, parseInt(d));
+      const dayStr = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+      dateText = `${dayStr}, ${parseInt(d)}`;
+    }
+  }
 
   return (
     <motion.div 
       className="bullet-wrapper"
-      drag={type === 'task' ? "x" : false}
+      drag={type !== 'note' ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
@@ -77,21 +101,31 @@ export default function BulletItem({ bullet, compact, contextLabel }) {
         </button>
         
         <div 
-          className={`bullet-text ${isComplete ? 'strikethrough' : ''} ${compact ? 'compact-view' : ''}`}
+          className={`bullet-text ${isComplete ? 'strikethrough' : ''} ${compact ? 'compact-view' : ''} ${searchResult ? 'search-result-view' : ''} ${type === 'note' ? (bullet.pageId?.startsWith('col_') ? 'note-collection' : 'note-daily') : ''}`}
           onClick={openDetail}
           title="Click to view/edit details"
         >
-          <div className="bullet-title">
-            {bullet.text}
-            {(!compact && bullet.description) && <span className="bullet-has-notes mobile-only">...</span>}
+          <div className="bullet-title-container">
+            <div className="bullet-title">
+              {bullet.text}
+              {(!compact && !searchResult && bullet.description) && <span className="bullet-has-notes mobile-only">...</span>}
+            </div>
+            {(searchResult || compact) && (
+              <div className="mobile-only mobile-date-under">
+                {dateText}
+              </div>
+            )}
           </div>
           
-          {(!compact) && (
+          {(searchResult || compact) ? (
+            <div className="desktop-only search-meta-desktop">
+              {searchResult && contextLabel && <span className="collection-badge">{contextLabel}</span>}
+              <span className="search-date">{dateText}</span>
+            </div>
+          ) : (
             <>
               <div className="meta-time desktop-only">
-                {contextLabel ? (
-                  <span className="collection-badge">{contextLabel}</span>
-                ) : displayTime ? (
+                {displayTime ? (
                   <span className="time-badge">{displayTime}</span>
                 ) : null}
               </div>

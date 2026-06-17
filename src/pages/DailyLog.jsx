@@ -5,13 +5,14 @@ import BulletItem from '../components/BulletItem';
 import BulletInput from '../components/BulletInput';
 import PageHeader from '../components/PageHeader';
 import { useAppStore } from '../store';
+import { getLocalISODate } from '../utils';
 import './DailyLog.css';
 
 export default function DailyLog() {
   const [pageId, setPageId] = useState(null);
 
   // Get today's date string YYYY-MM-DD
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalISODate(new Date());
 
   // 1. Find or create today's page
   useEffect(() => {
@@ -54,6 +55,11 @@ export default function DailyLog() {
       });
       
       dateBullets.forEach(b => {
+        // Only include global events, or tasks explicitly scheduled. 
+        // Exclude notes from Custom Collections!
+        if (b.type === 'note' && !b.pageId?.startsWith('page_')) {
+          return;
+        }
         mergedMap.set(b.id, b);
       });
       

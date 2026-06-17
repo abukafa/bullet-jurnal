@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAppStore } from './store';
+import { db } from './db';
 import BottomNavigation from './components/BottomNavigation';
 import DailyLog from './pages/DailyLog';
 import MonthlyLog from './pages/MonthlyLog';
@@ -9,9 +10,45 @@ import CustomCollectionView from './pages/CustomCollectionView';
 import TaskDetailView from './pages/TaskDetailView';
 import ConfirmModal from './components/ConfirmModal';
 import PromptModal from './components/PromptModal';
+import { toProperCase } from './utils';
 
 function App() {
   const { activeTab, theme, layoutMode, activeBulletId } = useAppStore();
+
+  useEffect(() => {
+    // Migration V2: convert 'task' to 'event' in 'future' pages, AND title case all bullets
+    const runV2Migration = async () => {
+      try {
+        const allBullets = await db.bullets.toArray();
+        const futurePages = await db.pages.where({ type: 'future' }).toArray();
+        const futurePageIds = new Set(futurePages.map(p => 'page_' + p.id));
+
+        for (const b of allBullets) {
+          let updates = {};
+          
+          // Convert to Title Case
+          if (b.text) {
+            const properText = toProperCase(b.text);
+            if (properText !== b.text) {
+              updates.text = properText;
+            }
+          }
+
+          // Convert future tasks to events
+          if (b.type === 'task' && futurePageIds.has(b.pageId)) {
+            updates.type = 'event';
+          }
+
+          if (Object.keys(updates).length > 0) {
+            await db.bullets.update(b.id, updates);
+          }
+        }
+      } catch (e) {
+        console.error("Migration failed", e);
+      }
+    };
+    runV2Migration();
+  }, []);
 
   useEffect(() => {
     // Apply theme to body
