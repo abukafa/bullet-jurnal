@@ -1,10 +1,7 @@
 .future-log {
-  padding-top: 20px;
-}
-
-.future-log h1 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--nav-height) - 40px);
 }
 
 .future-grid {
@@ -13,6 +10,12 @@
   gap: 20px;
   padding-bottom: 20px;
   scroll-snap-type: x mandatory;
+  flex: 1;
+  /* Hide scrollbar for cleaner look, handled globally but just in case */
+  scrollbar-width: none;
+}
+.future-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .future-month-card {
@@ -23,8 +26,9 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
-  min-width: 85vw; /* Almost full width on mobile */
+  min-width: 85vw;
   scroll-snap-align: start;
+  height: 100%;
 }
 
 .future-month-card h3 {
@@ -41,24 +45,19 @@
 .bullets-container.future {
   min-height: 80px;
   margin-bottom: 10px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 @media (min-width: 600px) {
-  .future-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    overflow-x: visible;
-  }
   .future-month-card {
-    min-width: auto;
+    min-width: calc(50vw - 40px);
   }
 }
 
 @media (min-width: 900px) {
-  .future-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+  .future-month-card {
+    /* (100vw - container padding - gaps) / 3 */
+    min-width: calc(33.333% - 14px);
   }
 }
-
-

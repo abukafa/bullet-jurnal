@@ -1,27 +1,35 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db';
-import { getLocalISODate } from '../utils';
-import BulletItem from '../components/BulletItem';
-import BulletInput from '../components/BulletInput';
-import PageHeader from '../components/PageHeader';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import './MonthlyLog.css';
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "../db";
+import { getLocalISODate } from "../utils";
+import BulletItem from "../components/BulletItem";
+import BulletInput from "../components/BulletInput";
+import PageHeader from "../components/PageHeader";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import "./MonthlyLog.css";
 
 export default function MonthlyLog() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  
+
   // Selected date defaults to today if in current month, otherwise 1st of the month
   const today = new Date();
-  const isCurrentMonth = currentMonth.getFullYear() === today.getFullYear() && currentMonth.getMonth() === today.getMonth();
-  
-  const [selectedDateStr, setSelectedDateStr] = useState(null);
+  const isCurrentMonth =
+    currentMonth.getFullYear() === today.getFullYear() &&
+    currentMonth.getMonth() === today.getMonth();
+  const todayStr = getLocalISODate(today);
+
+  const [selectedDateStr, setSelectedDateStr] = useState(
+    isCurrentMonth ? todayStr : null,
+  );
 
   const year = currentMonth.getFullYear();
   const monthIdx = currentMonth.getMonth();
-  const month = String(monthIdx + 1).padStart(2, '0');
+  const month = String(monthIdx + 1).padStart(2, "0");
   const monthStr = `${year}-${month}`;
-  const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthName = currentMonth.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
   // Handle month navigation
   const prevMonth = () => {
@@ -29,7 +37,7 @@ export default function MonthlyLog() {
     setCurrentMonth(newMonth);
     setSelectedDateStr(null);
   };
-  
+
   const nextMonth = () => {
     const newMonth = new Date(year, monthIdx + 1, 1);
     setCurrentMonth(newMonth);
@@ -39,7 +47,7 @@ export default function MonthlyLog() {
   // Generate calendar grid
   const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
   const firstDayOfWeek = new Date(year, monthIdx, 1).getDay(); // 0 (Sun) to 6 (Sat)
-  
+
   // Create array of day objects
   const calendarDays = useMemo(() => {
     const days = [];
@@ -49,7 +57,7 @@ export default function MonthlyLog() {
     }
     // Actual days
     for (let i = 1; i <= daysInMonth; i++) {
-      const dateString = `${year}-${month}-${String(i).padStart(2, '0')}`;
+      const dateString = `${year}-${month}-${String(i).padStart(2, "0")}`;
       days.push({ day: i, dateStr: dateString });
     }
     return days;
@@ -57,16 +65,16 @@ export default function MonthlyLog() {
 
   // Efficient Dexie query: ONLY load bullets for this specific month!
   const monthlyBullets = useLiveQuery(
-    () => db.bullets.where('date').startsWith(monthStr).toArray(),
-    [monthStr]
+    () => db.bullets.where("date").startsWith(monthStr).toArray(),
+    [monthStr],
   );
 
   // Derive dots map (which date has how many bullets)
   const dotsMap = useMemo(() => {
     const map = {};
     if (!monthlyBullets) return map;
-    monthlyBullets.forEach(b => {
-      if (b.type === 'note' && !b.pageId?.startsWith('page_')) return;
+    monthlyBullets.forEach((b) => {
+      if (b.type === "note" && !b.pageId?.startsWith("page_")) return;
       if (b.date) {
         map[b.date] = true; // Just boolean is enough for dot indicator
       }
@@ -78,13 +86,15 @@ export default function MonthlyLog() {
   const selectedDateBullets = useMemo(() => {
     if (!monthlyBullets || !selectedDateStr) return [];
     return monthlyBullets
-      .filter(b => b.date === selectedDateStr)
-      .filter(b => !(b.type === 'note' && !b.pageId?.startsWith('page_')))
+      .filter((b) => b.date === selectedDateStr)
+      .filter((b) => !(b.type === "note" && !b.pageId?.startsWith("page_")))
       .sort((a, b) => {
-        const timeA = a.time || '99:99';
-        const timeB = b.time || '99:99';
+        const timeA = a.time || "99:99";
+        const timeB = b.time || "99:99";
         if (timeA !== timeB) return timeA.localeCompare(timeB);
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
       });
   }, [monthlyBullets, selectedDateStr]);
 
@@ -92,12 +102,22 @@ export default function MonthlyLog() {
   const [pageId, setPageId] = useState(null);
   useEffect(() => {
     const initMonthlyPage = async () => {
-      let page = await db.pages.where({ date: monthStr, type: 'monthly' }).first();
+      let page = await db.pages
+        .where("date")
+        .equals(monthStr)
+        .and((p) => p.type === "monthly")
+        .first();
       if (!page) {
-        const id = await db.pages.add({ type: 'monthly', date: monthStr, title: monthName, createdAt: new Date(), updatedAt: new Date() });
-        setPageId('page_' + id);
+        const id = await db.pages.add({
+          type: "monthly",
+          date: monthStr,
+          title: monthName,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        setPageId("page_" + id);
       } else {
-        setPageId('page_' + page.id);
+        setPageId("page_" + page.id);
       }
     };
     initMonthlyPage();
@@ -107,82 +127,115 @@ export default function MonthlyLog() {
   const [futurePageId, setFuturePageId] = useState(null);
   useEffect(() => {
     const initFuturePage = async () => {
-      let page = await db.pages.where({ date: monthStr, type: 'future' }).first();
+      let page = await db.pages
+        .where("date")
+        .equals(monthStr)
+        .and((p) => p.type === "future")
+        .first();
       if (!page) {
-        const id = await db.pages.add({ type: 'future', date: monthStr, title: monthName, createdAt: new Date(), updatedAt: new Date() });
-        setFuturePageId('page_' + id);
+        const id = await db.pages.add({
+          type: "future",
+          date: monthStr,
+          title: monthName,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        setFuturePageId("page_" + id);
       } else {
-        setFuturePageId('page_' + page.id);
+        setFuturePageId("page_" + page.id);
       }
     };
     initFuturePage();
   }, [monthStr, monthName]);
 
-  const futureBullets = useLiveQuery(
-    async () => {
-      const allEvents = await db.bullets.where('type').equals('event').toArray();
-      return allEvents
-        .filter(b => b.date && b.date.startsWith(monthStr))
-        .sort((a, b) => {
-          const dateA = a.date || '9999-99-99';
-          const dateB = b.date || '9999-99-99';
-          if (dateA !== dateB) return dateA.localeCompare(dateB);
-          
-          const timeA = a.time || '99:99';
-          const timeB = b.time || '99:99';
-          if (timeA !== timeB) return timeA.localeCompare(timeB);
-          
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        });
-    },
-    [monthStr]
-  );
+  const futureBullets = useLiveQuery(async () => {
+    const allEvents = await db.bullets.where("type").equals("event").toArray();
+    return allEvents
+      .filter((b) => b.date && b.date.startsWith(monthStr))
+      .sort((a, b) => {
+        const dateA = a.date || "9999-99-99";
+        const dateB = b.date || "9999-99-99";
+        if (dateA !== dateB) return dateA.localeCompare(dateB);
+
+        const timeA = a.time || "99:99";
+        const timeB = b.time || "99:99";
+        if (timeA !== timeB) return timeA.localeCompare(timeB);
+
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      });
+  }, [monthStr]);
 
   const scrollRef = useRef(null);
   useEffect(() => {
     // On mobile, scroll the selected date into view roughly
     if (window.innerWidth < 768 && scrollRef.current && selectedDateStr) {
-      const activeEl = scrollRef.current.querySelector('.calendar-day-btn.active');
+      const activeEl = scrollRef.current.querySelector(
+        ".calendar-day-btn.active",
+      );
       if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        activeEl.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
       }
     }
   }, [selectedDateStr, calendarDays]);
 
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <div className="monthly-log">
-      <PageHeader title="Monthly Calendar" />
-      
+      <PageHeader title="Monthly" />
+
       <div className="calendar-navigation">
-        <button onClick={prevMonth} className="nav-btn"><ChevronLeft size={24} /></button>
+        <button onClick={prevMonth} className="nav-btn">
+          <ChevronLeft size={24} />
+        </button>
         <h2 className="month-title">{monthName}</h2>
-        <button onClick={nextMonth} className="nav-btn"><ChevronRight size={24} /></button>
+        <button onClick={nextMonth} className="nav-btn">
+          <ChevronRight size={24} />
+        </button>
       </div>
 
       <div className="split-view">
         <div className="calendar-view">
           {/* Desktop Weekday Headers */}
           <div className="weekday-headers desktop-only">
-            {weekDays.map(d => <div key={d} className="weekday">{d}</div>)}
+            {weekDays.map((d) => (
+              <div key={d} className="weekday">
+                {d}
+              </div>
+            ))}
           </div>
 
           <div className="calendar-grid" ref={scrollRef}>
             {calendarDays.map((item, idx) => {
-              if (!item) return <div key={`empty-${idx}`} className="calendar-day-empty desktop-only"></div>;
-              
+              if (!item)
+                return (
+                  <div
+                    key={`empty-${idx}`}
+                    className="calendar-day-empty desktop-only"
+                  ></div>
+                );
+
               const isToday = item.dateStr === getLocalISODate(today);
               const isActive = item.dateStr === selectedDateStr;
               const hasDots = dotsMap[item.dateStr];
 
               return (
-                <button 
-                  key={item.dateStr} 
-                  className={`calendar-day-btn ${isActive ? 'active' : ''} ${isToday ? 'today' : ''}`}
-                  onClick={() => setSelectedDateStr(isActive ? null : item.dateStr)}
+                <button
+                  key={item.dateStr}
+                  className={`calendar-day-btn ${isActive ? "active" : ""} ${isToday ? "today" : ""}`}
+                  onClick={() =>
+                    setSelectedDateStr(isActive ? null : item.dateStr)
+                  }
                 >
-                  <span className="day-name mobile-only">{weekDays[idx % 7]}</span>
+                  <span className="day-name mobile-only">
+                    {weekDays[idx % 7]}
+                  </span>
                   <span className="day-number">{item.day}</span>
                   {hasDots && <div className="day-dot"></div>}
                 </button>
@@ -198,17 +251,25 @@ export default function MonthlyLog() {
                 <h3>Monthly Planning</h3>
               </div>
               <div className="bullets-container future">
-                {futureBullets?.length === 0 && <p className="empty-state">No planning for this month.</p>}
-                {futureBullets?.map(b => (
-                  <BulletItem key={b.id} bullet={b} compact={true} searchResult={true} shortDate={true} />
+                {futureBullets?.length === 0 && (
+                  <p className="empty-state">No planning for this month.</p>
+                )}
+                {futureBullets?.map((b) => (
+                  <BulletItem
+                    key={b.id}
+                    bullet={b}
+                    compact={true}
+                    searchResult={true}
+                    shortDate={true}
+                  />
                 ))}
               </div>
               {futurePageId && (
-                <BulletInput 
-                  pageId={futurePageId} 
-                  defaultDate={`${year}-${month}-01`} 
+                <BulletInput
+                  pageId={futurePageId}
+                  defaultDate={`${year}-${month}-01`}
                   defaultType="event"
-                  defaultStatus="incomplete" 
+                  defaultStatus="incomplete"
                 />
               )}
             </>
@@ -216,19 +277,23 @@ export default function MonthlyLog() {
             <>
               <div className="task-view-header">
                 <h3>
-                  {selectedDateStr === getLocalISODate(today) 
-                    ? 'Tasks for Today' 
-                    : `${new Date(selectedDateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric'})}`}
+                  {selectedDateStr === getLocalISODate(today)
+                    ? "Tasks for Today"
+                    : `${new Date(selectedDateStr).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`}
                 </h3>
               </div>
-              
+
               <div className="bullets-container">
-                {selectedDateBullets.length === 0 && <p className="empty-state">No tasks scheduled.</p>}
-                {selectedDateBullets.map(b => (
+                {selectedDateBullets.length === 0 && (
+                  <p className="empty-state">No tasks scheduled.</p>
+                )}
+                {selectedDateBullets.map((b) => (
                   <BulletItem key={b.id} bullet={b} />
                 ))}
               </div>
-              {pageId && <BulletInput pageId={pageId} defaultDate={selectedDateStr} />}
+              {pageId && (
+                <BulletInput pageId={pageId} defaultDate={selectedDateStr} />
+              )}
             </>
           )}
         </div>

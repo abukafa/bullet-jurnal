@@ -108,14 +108,7 @@
   display: inline-block;
 }
 
-.mobile-date-under {
-  display: block !important;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  opacity: 0.6;
-  font-family: monospace;
-  margin-top: 2px;
-}
+
 
 /* Date and Badge Specific Styles */
 .search-date {
@@ -125,12 +118,20 @@
   font-family: monospace;
 }
 
-.search-meta-desktop {
+.search-meta-right {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
   flex-shrink: 0;
+}
+
+.bullet-text.compact-view,
+.bullet-text.search-result-view {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .search-result-view .collection-badge {
@@ -151,13 +152,7 @@
     width: 100%;
   }
 
-  .bullet-text.compact-view,
-  .bullet-text.search-result-view {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-  }
+
 
   .bullet-title {
     min-width: 0;

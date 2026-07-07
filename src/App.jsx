@@ -9,6 +9,7 @@ import IndexPage from './pages/IndexPage';
 import CustomCollectionView from './pages/CustomCollectionView';
 import TaskDetailView from './pages/TaskDetailView';
 import HabitTracker from './pages/HabitTracker';
+import OutstandingTasksView from './pages/OutstandingTasksView';
 import ConfirmModal from './components/ConfirmModal';
 import PromptModal from './components/PromptModal';
 import { toProperCase } from './utils';
@@ -21,7 +22,7 @@ function App() {
     const runV2Migration = async () => {
       try {
         const allBullets = await db.bullets.toArray();
-        const futurePages = await db.pages.where({ type: 'future' }).toArray();
+        const futurePages = await db.pages.where('type').equals('future').toArray();
         const futurePageIds = new Set(futurePages.map(p => 'page_' + p.id));
 
         for (const b of allBullets) {
@@ -77,6 +78,7 @@ function App() {
       case 'index': return <IndexPage />;
       case 'habits': return <HabitTracker />;
       case 'custom': return <CustomCollectionView />;
+      case 'outstanding': return <OutstandingTasksView />;
       default: return <DailyLog />;
     }
   };

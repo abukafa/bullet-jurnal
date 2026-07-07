@@ -84,6 +84,11 @@ export default function IndexPage() {
         </div>
 
         <div className="collections-list">
+          <button className="collection-card static-outstanding" onClick={() => setActiveTab('outstanding')}>
+            <Folder size={24} className="folder-icon" color="#ef4444" fill="#ef4444" />
+            <span style={{ color: '#ef4444', fontWeight: 600 }}>Outstanding</span>
+          </button>
+          
           {filteredCollections?.length === 0 && <p className="empty-state">No collections found.</p>}
           {filteredCollections?.map(col => (
             <button key={col.id} className="collection-card" onClick={() => openCollection(col.id)}>

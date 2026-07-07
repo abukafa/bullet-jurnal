@@ -1,0 +1,33 @@
+.outstanding-tasks-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.outstanding-nav {
+  margin-bottom: 1rem;
+}
+
+.outstanding-nav .back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  transition: color 0.2s;
+}
+
+.outstanding-nav .back-btn:hover {
+  color: var(--accent-color);
+}
+
+.outstanding-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}

@@ -57,17 +57,20 @@ export default function CustomCollectionView() {
 
   return (
     <div className="custom-collection-view">
-      <div className="collection-header">
-        <button className="back-btn" onClick={() => setActiveCollectionId(null)}>
-          <ArrowLeft size={20} />
-          <span>Index</span>
-        </button>
-        <button className="delete-btn" onClick={handleDelete} title="Delete Collection">
-          <Trash2 size={18} />
-        </button>
-      </div>
-
-      <PageHeader title={collection.name} />
+      <PageHeader 
+        title={collection.name}
+        leftNode={
+          <button className="back-btn icon-btn" onClick={() => setActiveCollectionId(null)}>
+            <ArrowLeft size={20} />
+            <span className="back-label desktop-only">Index</span>
+          </button>
+        }
+        rightNode={
+          <button className="icon-btn delete-btn" onClick={handleDelete} title="Delete Collection">
+            <Trash2 size={20} />
+          </button>
+        }
+      />
       
       <div className="collection-content">
         <div className="bullets-container custom">

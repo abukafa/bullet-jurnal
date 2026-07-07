@@ -17,7 +17,7 @@ export default function DailyLog() {
   // 1. Find or create today's page
   useEffect(() => {
     const initDailyPage = async () => {
-      let page = await db.pages.where({ date: todayStr, type: 'daily' }).first();
+      let page = await db.pages.where('date').equals(todayStr).and(p => p.type === 'daily').first();
       if (!page) {
         const id = await db.pages.add({
           type: 'daily',

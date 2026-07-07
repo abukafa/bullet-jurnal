@@ -5,6 +5,34 @@
   margin-bottom: 24px;
 }
 
+.page-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.back-btn:hover {
+  color: var(--text-color);
+  background-color: var(--bg-secondary);
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+  .back-btn {
+    padding: 8px;
+  }
+}
+
 .page-title {
   margin: 0;
   font-size: 1.8rem;

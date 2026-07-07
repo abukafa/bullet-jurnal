@@ -1,5 +1,4 @@
 .daily-log {
-  padding-top: 20px;
   transition: all 0.5s ease;
 }
 
@@ -33,7 +32,7 @@
 
 /* Zen Mode overrides */
 .daily-log.zen-mode {
-  padding-top: 40px;
+  padding-top: 20px;
 }
 
 .daily-log.zen-mode .daily-header h1 {

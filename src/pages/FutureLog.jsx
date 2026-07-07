@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useLayoutEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
 import BulletItem from '../components/BulletItem';
@@ -6,7 +6,8 @@ import BulletInput from '../components/BulletInput';
 import PageHeader from '../components/PageHeader';
 import './FutureLog.css';
 
-function FutureMonth({ year, month }) {
+// Memoize FutureMonth to prevent re-rendering all months when scrolling
+const FutureMonth = React.memo(({ year, month }) => {
   const monthIdx = month - 1;
   const monthStr = `${year}-${String(month).padStart(2, '0')}`;
   const monthDate = new Date(year, monthIdx, 1);
@@ -16,7 +17,7 @@ function FutureMonth({ year, month }) {
   const [pageId, setPageId] = useState(null);
   useEffect(() => {
     const initPage = async () => {
-      let page = await db.pages.where({ date: monthStr, type: 'future' }).first();
+      let page = await db.pages.where('date').equals(monthStr).and(p => p.type === 'future').first();
       if (!page) {
         const id = await db.pages.add({ type: 'future', date: monthStr, title: monthName, createdAt: new Date(), updatedAt: new Date() });
         setPageId('page_' + id);
@@ -52,7 +53,7 @@ function FutureMonth({ year, month }) {
 
   return (
     <div className="future-month-card">
-      <h3>{monthName}</h3>
+      <h3>{year} - {monthName}</h3>
       <div className="bullets-container future">
         {bullets?.map(b => (
           <BulletItem key={b.id} bullet={b} compact={true} searchResult={true} shortDate={true} />
@@ -68,30 +69,95 @@ function FutureMonth({ year, month }) {
       )}
     </div>
   );
-}
+});
 
 export default function FutureLog() {
-  const currentDate = new Date();
+  const currentDate = useMemo(() => new Date(), []);
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
-  const next6Months = Array.from({ length: 6 }, (_, i) => {
-    let m = currentMonth + i;
-    let y = currentYear;
-    if (m > 12) {
-      m -= 12;
-      y += 1;
+  const [range, setRange] = useState({ start: 0, end: 5 });
+  const [shouldAdjustScroll, setShouldAdjustScroll] = useState(false);
+
+  const gridRef = useRef(null);
+  const leftSentinelRef = useRef(null);
+  const rightSentinelRef = useRef(null);
+  const oldScrollWidth = useRef(0);
+  const oldScrollLeft = useRef(0);
+
+  const monthsToRender = useMemo(() => {
+    return Array.from({ length: range.end - range.start + 1 }, (_, i) => {
+      const offset = range.start + i;
+      let m = currentMonth + offset;
+      let y = currentYear;
+      
+      while (m > 12) {
+        m -= 12;
+        y += 1;
+      }
+      while (m < 1) {
+        m += 12;
+        y -= 1;
+      }
+      
+      return { month: m, year: y, offset };
+    });
+  }, [range.start, range.end, currentMonth, currentYear]);
+
+  // Adjust scroll position when prepending items
+  useLayoutEffect(() => {
+    if (shouldAdjustScroll && gridRef.current) {
+      const addedWidth = gridRef.current.scrollWidth - oldScrollWidth.current;
+      gridRef.current.scrollLeft = oldScrollLeft.current + addedWidth;
+      setShouldAdjustScroll(false);
     }
-    return { month: m, year: y };
-  });
+  }, [range.start, shouldAdjustScroll]);
+
+  useEffect(() => {
+    const handleLeftVisible = (entries) => {
+      if (entries[0].isIntersecting) {
+        if (gridRef.current) {
+          oldScrollWidth.current = gridRef.current.scrollWidth;
+          oldScrollLeft.current = gridRef.current.scrollLeft;
+        }
+        setRange(r => ({ ...r, start: r.start - 6 }));
+        setShouldAdjustScroll(true);
+      }
+    };
+
+    const handleRightVisible = (entries) => {
+      if (entries[0].isIntersecting) {
+        setRange(r => ({ ...r, end: r.end + 6 }));
+      }
+    };
+
+    const observerOptions = {
+      root: gridRef.current,
+      rootMargin: '200px',
+      threshold: 0
+    };
+
+    const leftObserver = new IntersectionObserver(handleLeftVisible, observerOptions);
+    const rightObserver = new IntersectionObserver(handleRightVisible, observerOptions);
+
+    if (leftSentinelRef.current) leftObserver.observe(leftSentinelRef.current);
+    if (rightSentinelRef.current) rightObserver.observe(rightSentinelRef.current);
+
+    return () => {
+      leftObserver.disconnect();
+      rightObserver.disconnect();
+    };
+  }, []); // Empty dependency array ensures we only set up observers once
 
   return (
     <div className="future-log">
       <PageHeader title="Future Log" />
-      <div className="future-grid">
-        {next6Months.map(({ month, year }) => (
+      <div className="future-grid" ref={gridRef}>
+        <div ref={leftSentinelRef} style={{ minWidth: '1px', flexShrink: 0 }} />
+        {monthsToRender.map(({ month, year }) => (
           <FutureMonth key={`${year}-${month}`} year={year} month={month} />
         ))}
+        <div ref={rightSentinelRef} style={{ minWidth: '1px', flexShrink: 0 }} />
       </div>
     </div>
   );

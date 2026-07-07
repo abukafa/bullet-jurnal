@@ -1,9 +1,9 @@
 import React from 'react';
 import { useAppStore } from '../store';
-import { Moon, Sun, Maximize, Minimize, Expand } from 'lucide-react';
+import { Moon, Sun, Maximize, Minimize } from 'lucide-react';
 import './PageHeader.css';
 
-export default function PageHeader({ title }) {
+export default function PageHeader({ title, leftNode, rightNode }) {
   const { theme, setTheme, layoutMode, cycleLayoutMode } = useAppStore();
 
   const toggleTheme = () => {
@@ -24,8 +24,12 @@ export default function PageHeader({ title }) {
 
   return (
     <div className="page-header">
-      <h1 className="page-title">{title}</h1>
+      <div className="page-header-left">
+        {leftNode}
+        <h1 className="page-title">{title}</h1>
+      </div>
       <div className="header-actions">
+        {rightNode}
         <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle Theme" title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}>
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
