@@ -12,6 +12,7 @@ import HabitTracker from './pages/HabitTracker';
 import OutstandingTasksView from './pages/OutstandingTasksView';
 import ConfirmModal from './components/ConfirmModal';
 import PromptModal from './components/PromptModal';
+import InstallPromptModal from './components/InstallPromptModal';
 import { toProperCase } from './utils';
 
 function App() {
@@ -66,6 +67,35 @@ function App() {
     root.classList.add(`layout-${layoutMode}`);
   }, [theme, layoutMode]);
 
+  const setDeferredPrompt = useAppStore(state => state.setDeferredPrompt);
+  const setInstallModalOpen = useAppStore(state => state.setInstallModalOpen);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+      // Update UI notify the user they can install the PWA
+      setInstallModalOpen(true);
+    };
+
+    const handleAppInstalled = () => {
+      // Clear the deferredPrompt so it can be garbage collected
+      setDeferredPrompt(null);
+      setInstallModalOpen(false);
+      console.log('PWA was installed');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, [setDeferredPrompt, setInstallModalOpen]);
+
   const renderContent = () => {
     if (activeBulletId) {
       return <TaskDetailView bulletId={activeBulletId} />;
@@ -91,6 +121,7 @@ function App() {
       {layoutMode !== 'zen' && !activeBulletId && <BottomNavigation />}
       <ConfirmModal />
       <PromptModal />
+      <InstallPromptModal />
     </div>
   );
 }

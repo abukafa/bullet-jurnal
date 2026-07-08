@@ -32,4 +32,10 @@ export const useAppStore = create((set) => ({
   promptDialog: null,
   showPrompt: (message, defaultValue, onSubmit) => set({ promptDialog: { message, defaultValue, onSubmit } }),
   hidePrompt: () => set({ promptDialog: null }),
+
+  // PWA Install Prompt State
+  deferredPrompt: null,
+  setDeferredPrompt: (prompt) => set({ deferredPrompt: prompt }),
+  isInstallModalOpen: false,
+  setInstallModalOpen: (isOpen) => set({ isInstallModalOpen: isOpen })
 }));
