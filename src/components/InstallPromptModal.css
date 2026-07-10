@@ -37,7 +37,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
 .install-close-btn:hover {
@@ -56,11 +58,11 @@
 .install-icon-wrapper {
   width: 80px;
   height: 80px;
-  border-radius: 18px;
+  /* border-radius: 18px; */
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
   margin-bottom: 20px;
-  background-color: white;
+  /* background-color: white; */
   padding: 5px;
 }
 
@@ -105,7 +107,9 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  transition:
+    opacity 0.2s,
+    transform 0.1s;
 }
 
 .install-btn-primary:active {
@@ -125,7 +129,9 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.2s, background-color 0.2s;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
 }
 
 .install-btn-secondary:hover {
