@@ -40,8 +40,15 @@ export const useAppStore = create((set) => ({
   setInstallModalOpen: (isOpen) => set({ isInstallModalOpen: isOpen }),
 
   // Auth & Sync State
-  user: null,
-  setUser: (user) => set({ user }),
+  user: JSON.parse(localStorage.getItem('bujo_user')) || null,
+  setUser: (user) => {
+    if (user) {
+      localStorage.setItem('bujo_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('bujo_user');
+    }
+    set({ user });
+  },
   syncStatus: 'idle', // 'idle' | 'syncing' | 'error'
   setSyncStatus: (status) => set({ syncStatus: status }),
   lastSyncTime: null,

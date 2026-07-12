@@ -50,6 +50,51 @@ function App() {
             await db.bullets.update(b.id, updates);
           }
         }
+
+        // RECOVERY: Recover orphaned notes in collections from the UUID migration bug
+        const allCols = await db.collections.toArray();
+        const validColPageIds = new Set(allCols.map(c => 'col_' + c.id));
+        
+        const orphanedColBullets = allBullets.filter(b => 
+          typeof b.pageId === 'string' && 
+          b.pageId.startsWith('col_') && 
+          !validColPageIds.has(b.pageId)
+        );
+
+        if (orphanedColBullets.length > 0) {
+          console.log(`Found ${orphanedColBullets.length} orphaned notes. Recovering...`);
+          const grouped = {};
+          for (const b of orphanedColBullets) {
+             if (!grouped[b.pageId]) grouped[b.pageId] = [];
+             grouped[b.pageId].push(b);
+          }
+
+          for (const oldPageId of Object.keys(grouped)) {
+             const newColId = crypto.randomUUID();
+             await db.collections.add({
+               id: newColId,
+               name: `Recovered Notes (${oldPageId})`,
+               type: 'custom',
+               icon: 'folder',
+               createdAt: new Date(),
+               updatedAt: new Date(),
+               deleted: 0
+             });
+
+             const bulletsToUpdate = grouped[oldPageId];
+             for (const b of bulletsToUpdate) {
+               await db.bullets.update(b.id, { 
+                 pageId: 'col_' + newColId,
+                 updatedAt: new Date()
+               });
+             }
+          }
+          // Force a sync if auto-sync is on
+          if (useAppStore.getState().isAutoSyncEnabled) {
+            // It will be caught by the interval, or we can just let the user sync.
+          }
+        }
+
       } catch (e) {
         console.error("Migration failed", e);
       }
