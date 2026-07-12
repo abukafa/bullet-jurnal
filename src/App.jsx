@@ -14,14 +14,18 @@ import ConfirmModal from './components/ConfirmModal';
 import PromptModal from './components/PromptModal';
 import InstallPromptModal from './components/InstallPromptModal';
 import { toProperCase } from './utils';
+import { migrateToSyncDB } from './services/migration';
 
 function App() {
   const { activeTab, theme, layoutMode, activeBulletId } = useAppStore();
 
   useEffect(() => {
-    // Migration V2: convert 'task' to 'event' in 'future' pages, AND title case all bullets
-    const runV2Migration = async () => {
+    // Migration V2 and UUID Sync Migration
+    const runMigrations = async () => {
       try {
+        // Run UUID Migration first
+        await migrateToSyncDB();
+
         const allBullets = await db.bullets.toArray();
         const futurePages = await db.pages.where('type').equals('future').toArray();
         const futurePageIds = new Set(futurePages.map(p => 'page_' + p.id));
@@ -50,7 +54,7 @@ function App() {
         console.error("Migration failed", e);
       }
     };
-    runV2Migration();
+    runMigrations();
   }, []);
 
   useEffect(() => {

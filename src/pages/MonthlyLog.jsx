@@ -65,7 +65,7 @@ export default function MonthlyLog() {
 
   // Efficient Dexie query: ONLY load bullets for this specific month!
   const monthlyBullets = useLiveQuery(
-    () => db.bullets.where("date").startsWith(monthStr).toArray(),
+    () => db.bullets.where("date").startsWith(monthStr).filter(b => b.deleted !== 1).toArray(),
     [monthStr],
   );
 
@@ -109,11 +109,13 @@ export default function MonthlyLog() {
         .first();
       if (!page) {
         const id = await db.pages.add({
+          id: crypto.randomUUID(),
           type: "monthly",
           date: monthStr,
           title: monthName,
           createdAt: new Date(),
           updatedAt: new Date(),
+          deleted: 0
         });
         setPageId("page_" + id);
       } else {
@@ -149,7 +151,7 @@ export default function MonthlyLog() {
   }, [monthStr, monthName]);
 
   const futureBullets = useLiveQuery(async () => {
-    const allEvents = await db.bullets.where("type").equals("event").toArray();
+    const allEvents = await db.bullets.where("type").equals("event").filter(b => b.deleted !== 1).toArray();
     return allEvents
       .filter((b) => b.date && b.date.startsWith(monthStr))
       .sort((a, b) => {

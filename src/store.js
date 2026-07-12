@@ -25,7 +25,7 @@ export const useAppStore = create((set) => ({
   setTheme: (theme) => set({ theme }),
   // Global Confirm Dialog
   confirmDialog: null,
-  showConfirm: (message, onConfirm) => set({ confirmDialog: { message, onConfirm } }),
+  showConfirm: (message, onConfirm, onCancel) => set({ confirmDialog: { message, onConfirm, onCancel } }),
   hideConfirm: () => set({ confirmDialog: null }),
 
   // Global Prompt Dialog
@@ -37,5 +37,20 @@ export const useAppStore = create((set) => ({
   deferredPrompt: null,
   setDeferredPrompt: (prompt) => set({ deferredPrompt: prompt }),
   isInstallModalOpen: false,
-  setInstallModalOpen: (isOpen) => set({ isInstallModalOpen: isOpen })
+  setInstallModalOpen: (isOpen) => set({ isInstallModalOpen: isOpen }),
+
+  // Auth & Sync State
+  user: null,
+  setUser: (user) => set({ user }),
+  syncStatus: 'idle', // 'idle' | 'syncing' | 'error'
+  setSyncStatus: (status) => set({ syncStatus: status }),
+  lastSyncTime: null,
+  setLastSyncTime: (time) => set({ lastSyncTime: time }),
+  
+  // Auto Sync Setting
+  isAutoSyncEnabled: localStorage.getItem('autoSync') === 'true',
+  setAutoSyncEnabled: (val) => {
+    localStorage.setItem('autoSync', val);
+    set({ isAutoSyncEnabled: val });
+  }
 }));

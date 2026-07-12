@@ -172,9 +172,18 @@ export default function HabitTracker() {
   const monthStr = `${year}-${String(monthIdx + 1).padStart(2, '0')}`;
   const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  const habitsRaw = useLiveQuery(() => db.habits.toArray(), []);
-  const monthlyLogs = useLiveQuery(() => db.habitLogs.where('date').startsWith(monthStr).toArray(), [monthStr]);
-  const allLogs = useLiveQuery(() => db.habitLogs.toArray(), []); // For streak calculations
+  const habitsRaw = useLiveQuery(async () => {
+    const data = await db.habits.toArray();
+    return data.filter(h => h.deleted !== 1);
+  }, []);
+  const monthlyLogs = useLiveQuery(async () => {
+    const data = await db.habitLogs.where('date').startsWith(monthStr).toArray();
+    return data.filter(l => l.deleted !== 1);
+  }, [monthStr]);
+  const allLogs = useLiveQuery(async () => {
+    const data = await db.habitLogs.toArray();
+    return data.filter(l => l.deleted !== 1);
+  }, []); // For streak calculations
 
   const [localHabits, setLocalHabits] = useState([]);
 
@@ -229,14 +238,14 @@ export default function HabitTracker() {
     if (!newHabitName.trim()) return;
     const name = toProperCase(newHabitName.trim());
     const maxOrder = localHabits.length > 0 ? Math.max(...localHabits.map(h => h.order || 0)) : 0;
-    await db.habits.add({ name, createdAt: new Date(), order: maxOrder + 1 });
+    await db.habits.add({ id: crypto.randomUUID(), name, createdAt: new Date(), updatedAt: new Date(), deleted: 0, order: maxOrder + 1 });
     setNewHabitName('');
   };
 
   const handleDeleteHabit = (id) => {
     showConfirm("Delete this habit and all its history?", async () => {
-      await db.habits.delete(id);
-      await db.habitLogs.where('habitId').equals(id).delete();
+      await db.habits.update(id, { deleted: 1, updatedAt: new Date() });
+      await db.habitLogs.where('habitId').equals(id).modify({ deleted: 1, updatedAt: new Date() });
     });
   };
 
@@ -245,10 +254,11 @@ export default function HabitTracker() {
     const exists = logMap[key];
 
     if (exists) {
-      await db.habitLogs.delete([habitId, dateStr]);
+      const log = await db.habitLogs.where({ habitId, date: dateStr }).first();
+      if (log) await db.habitLogs.update(log.id, { deleted: 1, updatedAt: new Date() });
     } else {
       if (navigator.vibrate) navigator.vibrate(40);
-      await db.habitLogs.add({ habitId, date: dateStr });
+      await db.habitLogs.add({ id: crypto.randomUUID(), habitId, date: dateStr, updatedAt: new Date(), deleted: 0 });
     }
   };
 

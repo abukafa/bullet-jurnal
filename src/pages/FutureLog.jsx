@@ -19,7 +19,7 @@ const FutureMonth = React.memo(({ year, month }) => {
     const initPage = async () => {
       let page = await db.pages.where('date').equals(monthStr).and(p => p.type === 'future').first();
       if (!page) {
-        const id = await db.pages.add({ type: 'future', date: monthStr, title: monthName, createdAt: new Date(), updatedAt: new Date() });
+        const id = await db.pages.add({ id: crypto.randomUUID(), type: 'future', date: monthStr, title: monthName, createdAt: new Date(), updatedAt: new Date(), deleted: 0 });
         setPageId('page_' + id);
       } else {
         setPageId('page_' + page.id);
@@ -33,7 +33,7 @@ const FutureMonth = React.memo(({ year, month }) => {
     async () => {
       const allEvents = await db.bullets.where('type').equals('event').toArray();
       return allEvents
-        .filter(b => b.date && b.date.startsWith(monthStr))
+        .filter(b => b.date && b.date.startsWith(monthStr) && b.deleted !== 1)
         .sort((a, b) => {
           const dateA = a.date || '9999-99-99';
           const dateB = b.date || '9999-99-99';

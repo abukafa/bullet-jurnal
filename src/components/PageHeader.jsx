@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAppStore } from '../store';
 import { Moon, Sun, Maximize, Minimize } from 'lucide-react';
+import SyncProfileNode from './SyncProfileNode';
 import './PageHeader.css';
 
 export default function PageHeader({ title, leftNode, rightNode }) {
@@ -30,6 +31,7 @@ export default function PageHeader({ title, leftNode, rightNode }) {
       </div>
       <div className="header-actions">
         {rightNode}
+        <SyncProfileNode />
         <button className="icon-btn" onClick={toggleTheme} aria-label="Toggle Theme" title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}>
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>

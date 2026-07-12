@@ -11,16 +11,26 @@ export default function IndexPage() {
   const { setActiveTab, setActiveCollectionId, showPrompt } = useAppStore();
   const [searchTerm, setSearchTerm] = useState('');
   
-  const collections = useLiveQuery(() => db.collections.toArray());
-  const allBullets = useLiveQuery(() => db.bullets.toArray());
+  const collections = useLiveQuery(async () => {
+    const data = await db.collections.toArray();
+    return data.filter(c => c.deleted !== 1);
+  });
+  const allBullets = useLiveQuery(async () => {
+    const data = await db.bullets.toArray();
+    return data.filter(b => b.deleted !== 1);
+  });
 
   const handleCreateCollection = async () => {
     showPrompt("Enter new collection name (e.g., 'Gratitude', 'Books'):", "", async (name) => {
       if (name && name.trim() !== '') {
         const id = await db.collections.add({
+          id: crypto.randomUUID(),
           name: name.trim(),
           type: 'custom',
-          createdAt: new Date()
+          icon: 'folder',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deleted: 0
         });
         openCollection(id);
       }

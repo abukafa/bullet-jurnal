@@ -10,7 +10,10 @@ import "./OutstandingTasksView.css";
 export default function OutstandingTasksView() {
   const { setActiveTab } = useAppStore();
 
-  const allBullets = useLiveQuery(() => db.bullets.toArray(), []);
+  const allBullets = useLiveQuery(async () => {
+    const data = await db.bullets.toArray();
+    return data.filter(b => b.deleted !== 1);
+  }, []);
 
   const outstandingTasks = useMemo(() => {
     if (!allBullets) return [];

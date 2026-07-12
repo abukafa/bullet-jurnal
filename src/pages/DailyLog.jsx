@@ -20,11 +20,13 @@ export default function DailyLog() {
       let page = await db.pages.where('date').equals(todayStr).and(p => p.type === 'daily').first();
       if (!page) {
         const id = await db.pages.add({
+          id: crypto.randomUUID(),
           type: 'daily',
           date: todayStr,
-          title: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }),
+          title: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }),
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          deleted: 0
         });
         setPageId('page_' + id);
       } else {
@@ -40,10 +42,10 @@ export default function DailyLog() {
       if (!pageId) return [];
       
       // Get bullets assigned to today's page
-      const pageBullets = await db.bullets.where({ pageId }).toArray();
+      const pageBullets = (await db.bullets.where({ pageId }).toArray()).filter(b => b.deleted !== 1);
       
       // Get bullets explicitly scheduled for today from anywhere
-      const dateBullets = await db.bullets.where('date').equals(todayStr).toArray();
+      const dateBullets = (await db.bullets.where('date').equals(todayStr).toArray()).filter(b => b.deleted !== 1);
       
       // Merge and deduplicate by id
       const mergedMap = new Map();

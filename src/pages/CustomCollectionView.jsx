@@ -28,7 +28,7 @@ export default function CustomCollectionView() {
       if (!pageId) return [];
       const items = await db.bullets.where({ pageId }).toArray();
       
-      return items.sort((a, b) => {
+      return items.filter(b => b.deleted !== 1).sort((a, b) => {
         const dateA = a.date || '9999-99-99';
         const dateB = b.date || '9999-99-99';
         if (dateA !== dateB) return dateA.localeCompare(dateB);
@@ -44,11 +44,10 @@ export default function CustomCollectionView() {
   );
 
   const handleDelete = async () => {
-    showConfirm(`Are you sure you want to delete "${collection?.name}" and all its contents?`, async () => {
-      // Delete collection
-      await db.collections.delete(collectionId);
-      // Delete associated bullets
-      await db.bullets.where({ pageId }).delete();
+    showConfirm(`Are you sure you want to delete the collection "${collection.name}"? This will also delete all tasks inside it.`, async () => {
+      await db.collections.update(collectionId, { deleted: 1, updatedAt: new Date() });
+      const pageId = 'collection_' + collectionId;
+      await db.bullets.where({ pageId }).modify({ deleted: 1, updatedAt: new Date() });
       setActiveCollectionId(null);
     });
   };

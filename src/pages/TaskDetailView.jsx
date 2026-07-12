@@ -21,7 +21,10 @@ export default function TaskDetailView({ bulletId }) {
   const [bulletPageId, setBulletPageId] = useState('');
   const [originalPageId, setOriginalPageId] = useState('');
 
-  const collections = useLiveQuery(() => db.collections.toArray());
+  const collections = useLiveQuery(async () => {
+    const data = await db.collections.toArray();
+    return data.filter(c => c.deleted !== 1);
+  });
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -104,9 +107,9 @@ export default function TaskDetailView({ bulletId }) {
     setActiveBulletId(null);
   };
 
-  const handleDelete = async () => {
-    showConfirm("Are you sure you want to delete this task? This action cannot be undone.", async () => {
-      await db.bullets.delete(bulletId);
+  const handleDelete = () => {
+    showConfirm("Are you sure you want to delete this item?", async () => {
+      await db.bullets.update(bulletId, { deleted: 1, updatedAt: new Date() });
       setActiveBulletId(null);
     });
   };

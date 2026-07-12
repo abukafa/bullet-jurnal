@@ -47,6 +47,7 @@ export default function BulletInput({ pageId, defaultDate, defaultStatus, defaul
     const timeStr = `${hours}:${minutes}`;
 
     const newBullet = {
+      id: crypto.randomUUID(),
       pageId,
       type,
       status: defaultStatus || 'incomplete',
@@ -55,7 +56,8 @@ export default function BulletInput({ pageId, defaultDate, defaultStatus, defaul
       time: timeStr,
       order: Date.now(),
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
+      deleted: 0
     };
 
     const id = await db.bullets.add(newBullet);
