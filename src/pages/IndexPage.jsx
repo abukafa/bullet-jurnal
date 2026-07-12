@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
-import { Search, Plus, Folder } from 'lucide-react';
+import { Search, Plus, Folder, Edit2 } from 'lucide-react';
 import { useAppStore } from '../store';
 import PageHeader from '../components/PageHeader';
 import BulletItem from '../components/BulletItem';
@@ -33,6 +33,17 @@ export default function IndexPage() {
           deleted: 0
         });
         openCollection(id);
+      }
+    });
+  };
+
+  const handleRenameCollection = async (col) => {
+    showPrompt(`Rename collection '${col.name}':`, col.name, async (newName) => {
+      if (newName && newName.trim() !== '' && newName.trim() !== col.name) {
+        await db.collections.update(col.id, {
+          name: newName.trim(),
+          updatedAt: new Date()
+        });
       }
     });
   };
@@ -101,10 +112,29 @@ export default function IndexPage() {
           
           {filteredCollections?.length === 0 && <p className="empty-state">No collections found.</p>}
           {filteredCollections?.map(col => (
-            <button key={col.id} className="collection-card" onClick={() => openCollection(col.id)}>
-              <Folder size={24} className="folder-icon" />
-              <span>{col.name}</span>
-            </button>
+            <div key={col.id} style={{ position: 'relative' }}>
+              <button className="collection-card" style={{ width: '100%', height: '100%' }} onClick={() => openCollection(col.id)}>
+                <Folder size={24} className="folder-icon" />
+                <span>{col.name}</span>
+              </button>
+              <button 
+                className="icon-btn" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRenameCollection(col);
+                }}
+                style={{ 
+                  position: 'absolute', 
+                  top: '8px', 
+                  right: '8px', 
+                  color: 'var(--text-muted)',
+                  padding: '4px'
+                }}
+                title="Rename Collection"
+              >
+                <Edit2 size={14} />
+              </button>
+            </div>
           ))}
         </div>
       </div>
